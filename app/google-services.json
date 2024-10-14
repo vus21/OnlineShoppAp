@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "144486697849",
+    "firebase_url": "https://project-android-d829b-default-rtdb.firebaseio.com",
+    "project_id": "project-android-d829b",
+    "storage_bucket": "project-android-d829b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144486697849:android:dfec6f15c64ee820b87da8",
+        "android_client_info": {
+          "package_name": "com.example.onlineshopp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "144486697849-n44pr7s8prhim2anrdbcsq5rjl7vlfbr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChTs63Orpo-kSalIOZuY5atvZPv0Bl-fk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "144486697849-n44pr7s8prhim2anrdbcsq5rjl7vlfbr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
