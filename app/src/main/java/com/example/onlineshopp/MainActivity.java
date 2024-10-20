@@ -2,8 +2,8 @@ package com.example.onlineshopp;
 
 import static com.example.onlineshopp.temptlA.REQUEST_GOHOME;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -14,20 +14,27 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
+import com.example.onlineshopp.Database.ConnectSQLite;
+import com.example.onlineshopp.FragmentLayout.FragmentHomeViewModel;
 import com.example.onlineshopp.FragmentLayout.FragmentMeViewModel;
 import com.example.onlineshopp.FragmentLayout.Fragment_Cart;
 import com.example.onlineshopp.FragmentLayout.Fragment_Home;
 import com.example.onlineshopp.FragmentLayout.Fragment_me;
+import com.example.onlineshopp.Object.cartItem;
 import com.example.onlineshopp.interface1.InterFace;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements InterFace {
     private  String TAG= MainActivity.class.getName();
     BottomNavigationView bottomNavigationView;
     FrameLayout mView;
     Bundle bundle;
+    Fragment_Home fragmentHome=new Fragment_Home();
+    Fragment_me fragmentMe=new Fragment_me();
+    Fragment_Cart fragmentCart=new Fragment_Cart();
     private String int1,int2,int3,int4,int5;
     private FragmentMeViewModel viewModel;
 
@@ -37,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements InterFace {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-
         setMapping();
         Intent i=getIntent();
         if(i!=null){
@@ -45,22 +51,14 @@ public class MainActivity extends AppCompatActivity implements InterFace {
         }else{
             Log.v("TAG!!!","Ko  nhan dc ");
         }
-        Log.v(TAG,"Ahihihihi"+int1+"\n"+int2+"\n"+int3);
 
         //Khi Chay app  FrameLayout se load Fragment_Home dau` tien
         if(savedInstanceState==null){
             getSupportFragmentManager().beginTransaction().replace(R.id.framelayout_view,new Fragment_Home()).commit();
         }
 
-
         eVentCompoment();
 
-
-        viewModel = new ViewModelProvider(this).get(FragmentMeViewModel.class);
-        viewModel.getuser().observe(this, data -> {
-            // Nhận dữ liệu từ Fragment
-            Log.d("Data from Fragment", data);
-        });
     }
 
 
@@ -75,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements InterFace {
 
     @Override
     public void eVentCompoment() {
+
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -83,10 +82,10 @@ public class MainActivity extends AppCompatActivity implements InterFace {
                         int idItem = menuItem.getItemId();
                         if (idItem == R.id.navigation_home) {
 //                            Load Fragment_Home
-                            loadFragment(new Fragment_Home());
+                            loadFragment(fragmentHome);
                         } else if (idItem == R.id.navigation_cart) {
 //                            Load Fragment_Search
-                            loadFragment(new Fragment_Cart());
+                            loadFragment(fragmentCart);
                         } else if (idItem == R.id.navigation_notifications) {
 //                            Load Fragment_Notification
                             Fragment_me fragmentMe=new Fragment_me();
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements InterFace {
                             loadFragment(fragmentMe);
                         } else if (idItem == R.id.navigation_profile) {
 //                            Load Fragment_me
-                            loadFragment(new Fragment_me());
+                            loadFragment(fragmentMe);
                         }
                         return true;
                     }
@@ -107,8 +106,7 @@ public class MainActivity extends AppCompatActivity implements InterFace {
     }
 
     @Override
-    public void onDatapass() {
-            Log.d("MainActivity", "Received from Fragment: " );
+    public void getDataCheckBox(List<cartItem> mlistcart) {
     }
 
 
@@ -122,8 +120,8 @@ public class MainActivity extends AppCompatActivity implements InterFace {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_GOHOME) {
+        if (requestCode == REQUEST_GOHOME) {
+            if (resultCode == RESULT_OK) {
                 if (data != null) {
                     String email = data.getStringExtra("email");
                     String uid = data.getStringExtra("uid");

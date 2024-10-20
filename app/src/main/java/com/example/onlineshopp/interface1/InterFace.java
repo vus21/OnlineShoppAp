@@ -1,9 +1,13 @@
 package com.example.onlineshopp.interface1;
 
-public interface InterFace {
-    public void setMapping();
+import com.example.onlineshopp.Object.cartItem;
 
-    public void eVentCompoment();
+import java.util.List;
+
+public interface InterFace {
+    void setMapping();
+
+    void eVentCompoment();
     void onQuantityChanged();
-    void onDatapass();
+    void getDataCheckBox(List<cartItem> mlistcart);
 }

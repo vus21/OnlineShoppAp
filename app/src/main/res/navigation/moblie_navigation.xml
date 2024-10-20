@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/moblie_navigation"
+    app:startDestination="@id/fragment_Home">
+
+    <fragment
+        android:id="@+id/fragment_Home"
+        android:name="com.example.onlineshopp.FragmentLayout.Fragment_Home"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_categoryDetailFragment"
+            app:destination="@+id/fragment_me"
+            />
+
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_search"
+        android:name="com.example.onlineshopp.FragmentLayout.Fragment_search"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" />
+    <activity
+        android:id="@+id/mainViewModel"
+        android:name="com.example.onlineshopp.MainViewModel"
+        android:label="MainViewModel" />
+    <activity
+        android:id="@+id/activity_login"
+        android:name="com.example.onlineshopp.ActivityLayout.Activity_login"
+        android:label="activity_login"
+        tools:layout="@layout/activity_login" />
+    <activity
+        android:id="@+id/activityDeltai_Item"
+        android:name="com.example.onlineshopp.ActivityLayout.ActivityDeltai_Item"
+        android:label="ActivityDeltai_Item" />
+    <fragment
+        android:id="@+id/fragment_me"
+        android:name="com.example.onlineshopp.FragmentLayout.Fragment_me"
+        android:label="fragment_me"
+        tools:layout="@layout/fragment_me" >
+        <action
+            android:id="@+id/gotofragment_home"
+            app:destination="@+id/fragment_Home"
+            />
+    </fragment>
+</navigation>

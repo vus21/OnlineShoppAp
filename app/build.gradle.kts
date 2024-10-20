@@ -39,9 +39,11 @@ dependencies {
 
     implementation("com.google.firebase:firebase-auth:22.0.0")
     implementation("com.google.android.gms:play-services-auth:20.5.0")
-
+    implementation ("androidx.core:core:1.6.0")
     implementation("com.google.firebase:firebase-firestore:24.1.0")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.squareup.okhttp3:okhttp:4.6.0")
+    implementation("commons-codec:commons-codec:1.14")
 
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -54,6 +56,11 @@ dependencies {
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.annotation)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
+    implementation(libs.firebase.messaging)
+    implementation(libs.play.services.maps)
+    implementation(files("src/main/java/Vendors/zpdk-release-v3.1.aar"))
     testImplementation(libs.junit)
 
     androidTestImplementation(libs.ext.junit)

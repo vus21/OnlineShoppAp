@@ -3,7 +3,10 @@ package com.example.onlineshopp.ActivityLayout;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,10 +24,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.onlineshopp.Database.ConnectFirebase;
+import com.example.onlineshopp.Database.ConnectSQLite;
 import com.example.onlineshopp.FragmentLayout.Fragment_Home;
+import com.example.onlineshopp.MainActivity;
 import com.example.onlineshopp.R;
 import com.example.onlineshopp.databinding.ActivityLoginBinding;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Firebase;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -36,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 public class Activity_login extends AppCompatActivity {
     String TAG=Activity_login.class.getName();
     ActivityLoginBinding binding;
-    TextInputLayout pwdtxtLayout,usertxtLayout;
+    TextInputEditText  pwdtxt,usertxt;
     Button btnlogin;
     TextView signUpText;
     boolean canLogin=false;
@@ -49,6 +55,8 @@ public class Activity_login extends AppCompatActivity {
         EdgeToEdge.enable(this);
         binding=ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        ConnectSQLite db=new ConnectSQLite(getApplicationContext());
+        SQLiteDatabase d1=db.getWritableDatabase();
         setMapping();
         ConnectFirebase.setDb();
         eventCompment();
@@ -56,11 +64,12 @@ public class Activity_login extends AppCompatActivity {
 
     @SuppressLint("ResourceAsColor")
     private void eventCompment() {
-        String pwd=pwdtxtLayout.getEditText().getText().toString();
-        String user=usertxtLayout.getEditText().getText().toString();
-        if(pwd.isEmpty() || user.isEmpty()){
-            btnlogin.setEnabled(false);
-        }
+
+                String pwd=pwdtxt.getText().toString();
+                String user=usertxt.getText().toString();
+                if(pwd.isEmpty() || user.isEmpty()){
+                    btnlogin.setEnabled(false);
+                }
 
 
         binding.passwordLogin.getEditText().addTextChangedListener(new TextWatcher() {
@@ -86,7 +95,9 @@ public class Activity_login extends AppCompatActivity {
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                        checkLogin(user,pwd);
+                Log.v("TAG",pwdtxt.getText().toString()+"\n"+usertxt.getText().toString());
+                checkLogin(usertxt.getText().toString(),pwdtxt.getText().toString());
+
             }
         });
 
@@ -101,22 +112,25 @@ public class Activity_login extends AppCompatActivity {
             }
         });
     }
+
+
     private void setMapping(){
-        usertxtLayout=binding.userNameLogin;
-        pwdtxtLayout=binding.passwordLogin;
+        usertxt=binding.userNameLogin1;
+        pwdtxt=binding.passwordLogin1;
         btnlogin=binding.loginButton;
         signUpText=binding.signUpText;
+
     }
     private void validatePassword(String password) {
 
         // Kiểm tra điều kiện mật khẩu
-        if (password.length() < 5 || !hasUpperCase(password)) {
+        if (password.length() < 5 || !temptlA.hasUpperCase(password)) {
             // Hiện thị biểu tượng lỗi
-            pwdtxtLayout.setError(getString(R.string.invalid_password));
+            pwdtxt.setError(getString(R.string.invalid_password));
             canLogin=false;
         } else {
             // Xóa thông báo lỗi
-            pwdtxtLayout.setError(null);
+            pwdtxt.setError(null);
             canLogin=true;
         }
     }
@@ -130,61 +144,44 @@ public class Activity_login extends AppCompatActivity {
             btnlogin.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
         }
     }
-    private boolean hasUpperCase(String str) {
-        // Kiểm tra xem chuỗi có ký tự in hoa không
-        for (char c : str.toCharArray()) {
-            if (Character.isUpperCase(c)) {
-                return true;
-            }
-        }
-        return false;
-    }
+
 
     private void checkLogin(String user,String pwd){
-        String t=binding.userNameLogin1.getEditableText().toString();
-        String t1=binding.passwordLogin1.getEditableText().toString();
-        ConnectFirebase.db.collection("accounts").whereEqualTo("email",t).get()
-                .addOnCompleteListener(task -> {
-                    if(task.isSuccessful()){
-                        //Check Email
-                        if(!task.getResult().isEmpty()){
-                            for(QueryDocumentSnapshot document:task.getResult()){
-                              loginn(t,t1,document);
-
-                            }
-                        }else{
-                            Log.d(TAG,"Không có tồn tại Email này "+"\n"+user+"\n"+t);
-                        }
-                    }else{
-                        Log.e("LoginActivity", "Error getting documents: ", task.getException());
-                        Toast.makeText(Activity_login.this, "Lỗi khi kiểm tra email: " +
-                                                task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-
-    private void loginn(String u,String p,QueryDocumentSnapshot documentSnapshot){
-        i=documentSnapshot.getString("email");
-        i1=documentSnapshot.getString("uid");
-        i2=documentSnapshot.getString("roleId");
-        i3=documentSnapshot.getString("password");
-            if(i.equals(u) && i3.equals(p)){
+        SQLiteDatabase database=new ConnectSQLite(getApplicationContext()).getWritableDatabase();
+        Cursor cursor;
+        cursor=database.rawQuery("SELECT * FROM "+ConnectSQLite.TABLE+" WHERE Nameuser = ? AND Password = ?", new String[]{user,pwd});
+        String id=null;
+        if(cursor.getCount() ==1){
+            if(cursor.moveToNext()){
+                Log.v("Activity_login",temptlA.Datetimecurrent+"\n"+"Login is Successfully \n "+
+                        cursor.getString(0)+"\nId_customer: "+
+                        cursor.getString(1));
+                id=cursor.getString(0);
+                updateTime(cursor.getString(1),database);
                 Intent in1=new Intent();
-                in1.putExtra("email",i);
-                in1.putExtra("uid",i1);
-                in1.putExtra("roleId",i2);
-                in1.putExtra("pwd",i3);
+                in1.putExtra("id",cursor.getString(0));
+                in1.putExtra("uid",id);
+                in1.putExtra("roleId",cursor.getString(2));
+                in1.putExtra("pwd",cursor.getString(3));
                 temptlA.setIsLogin(true);
                 setResult(RESULT_OK,in1);
                 finish();
-        }else{
-                Toast.makeText(this,"Tai khoan hoac mat khau khong chinh xac",Toast.LENGTH_LONG).show();
             }
+        }else{
+            Log.v("TAG","Loi dang nhap !!1");
+            Toast.makeText(getApplicationContext(),"Tai khoan hoac mat khau khong chinh sac vui long nhap lai",Toast.LENGTH_LONG).show();
+        }
+
+    }
+    private void updateTime(String id,SQLiteDatabase database){
+        if(!id.isEmpty()){
+            ContentValues values=new ContentValues();
+            values.put("UpdateAt",temptlA.Datetimecurrent);
+            database.update(ConnectSQLite.TABLE,values,"ID_Customer = ? ",new String[]{id});
+            Log.v("Activity_login","Ban ghi  dc cap nhat");
+        }else{
+            Log.v("Activity_login","Ban ghi chua dc cap nhat");
+        }
     }
 
-    private  void showDialogErrors(){
-        AlertDialog.Builder builder=new AlertDialog.Builder(this);
-        builder.setTitle("Lỗi Đăng nhập!!!!");
-    }
 }

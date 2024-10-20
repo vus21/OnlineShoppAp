@@ -1,6 +1,8 @@
 package com.example.onlineshopp.Object;
 
-public class cartItem {
+import java.io.Serializable;
+
+public class cartItem   implements Serializable {
     private String ItemID;
     private ItemFood item;
     private int Quantity;

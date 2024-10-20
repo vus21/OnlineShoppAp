@@ -67,8 +67,8 @@ public class User implements Serializable {
         Phone = phone;
     }
 
-    public int getRole() {
-        return Role;
+    public String getRole() {
+        return String.valueOf(Role);
     }
 
     public void setRole(int role) {

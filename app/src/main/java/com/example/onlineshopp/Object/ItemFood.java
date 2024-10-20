@@ -4,7 +4,45 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ItemFood implements Serializable {
-    private  int ID,costOld,costNew,review;
+    private  int ID;
+    private  int costOld,costNew,review;
+    private int idCate;
+
+    public int getIdCate() {
+        return idCate;
+    }
+
+    public void setIdCate(int idCate) {
+        this.idCate = idCate;
+    }
+
+    public int getInventory() {
+        return Inventory;
+    }
+
+    public void setInventory(int inventory) {
+        Inventory = inventory;
+    }
+
+    public int getPrice() {
+        return Price;
+    }
+
+    public void setPrice(int price) {
+        Price = price;
+    }
+
+    public int getDiscount() {
+        return Discount;
+    }
+
+    public void setDiscount(int discount) {
+        Discount = discount;
+    }
+
+    private int Inventory;
+    private int Price;
+    private int Discount;
     float rating;
     private  String picURL,Title,desc;
 
@@ -17,51 +55,22 @@ public class ItemFood implements Serializable {
     public void setListURL(ArrayList<String> listURL) {
         this.listURL = listURL;
     }
-
-    public ItemFood() {}
-
-    public ItemFood(int ID, int costOld, int costNew, int review,float rating, String title, String desc, ArrayList<String> listURL) {
+    public ItemFood(int ID,String title,int idCate,int Price,int Iventory,int Discount,ArrayList<String> listURL,String desc){
         this.ID = ID;
-        this.costOld = costOld;
-        this.costNew = costNew;
-        this.review = review;
         Title = title;
         this.desc = desc;
-        this.rating=rating;
         this.listURL = listURL;
-    }
+         this.Price=Price;
+         this.idCate=idCate;
+         this.Inventory=Iventory;
+         this.Discount=Discount;
 
-    public int getCostOld() {
-        return costOld;
     }
+    public ItemFood() {}
 
-    public void setCostOld(int costOld) {
-        this.costOld = costOld;
-    }
 
-    public float getRating() {
-        return rating;
-    }
 
-    public void setRating(float costOld) {
-        this.rating = costOld;
-    }
 
-    public int getCostNew() {
-        return costNew;
-    }
-
-    public void setCostNew(int costNew) {
-        this.costNew = costNew;
-    }
-
-    public int getReview() {
-        return review;
-    }
-
-    public void setReview(int review) {
-        this.review = review;
-    }
 
     public String getDesc() {
         return desc;

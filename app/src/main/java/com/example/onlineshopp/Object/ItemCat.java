@@ -1,5 +1,7 @@
 package com.example.onlineshopp.Object;
 
+import com.example.onlineshopp.Database.ConnectFirebase;
+
 public class ItemCat {
     private  int ID;
     private  String picURL,Title;
@@ -32,5 +34,9 @@ public class ItemCat {
 
     public void setTitle(String title) {
         Title = title;
+    }
+
+    public static void LoadCartUser(String ID){
+        ConnectFirebase.setDb();
     }
 }

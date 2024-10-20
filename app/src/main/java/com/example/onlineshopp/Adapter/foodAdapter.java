@@ -43,9 +43,10 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.myViewHolder> 
         ItemFood food=mlist.get(position);
 
         holder.binding.texttitlefood.setText(food.getTitle());
-        holder.binding.textcost.setText(String.valueOf(food.getCostNew()));
-        holder.binding.textsell.setText(String.valueOf(food.getReview()));
-        Glide.with(holder.itemView.getContext()).load(food.getListURL().get(0))
+        holder.binding.textcost.setText(String.valueOf(food.getPrice()));
+        holder.binding.textsell.setText(String.valueOf(food.getInventory()));
+        Glide.with(holder.itemView.getContext()).
+                load(food.getListURL().get(0))
                 .into(holder.binding.imageViewfood);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -64,8 +65,7 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.myViewHolder> 
     }
 
     public class myViewHolder extends  RecyclerView.ViewHolder{
-        TextView tv,tv1,tv2;
-        ImageView img;
+
         ItemfoodBinding binding;
         public myViewHolder(ItemfoodBinding binding) {
             super(binding.getRoot());

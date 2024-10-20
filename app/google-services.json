@@ -1,34 +1,42 @@
 {
   "project_info": {
-    "project_number": "144486697849",
-    "firebase_url": "https://project-android-d829b-default-rtdb.firebaseio.com",
-    "project_id": "project-android-d829b",
-    "storage_bucket": "project-android-d829b.appspot.com"
+    "project_number": "681422069451",
+    "firebase_url": "https://baitaplon-98c00-default-rtdb.firebaseio.com",
+    "project_id": "baitaplon-98c00",
+    "storage_bucket": "baitaplon-98c00.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:144486697849:android:dfec6f15c64ee820b87da8",
+        "mobilesdk_app_id": "1:681422069451:android:49cb5ba62540e37c87854e",
         "android_client_info": {
           "package_name": "com.example.onlineshopp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "144486697849-n44pr7s8prhim2anrdbcsq5rjl7vlfbr.apps.googleusercontent.com",
+          "client_id": "681422069451-crbobtgame59od33rsubqknhlbfngjdq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.onlineshopp",
+            "certificate_hash": "0f44692038cee94929488327fb83f0f68fadb89d"
+          }
+        },
+        {
+          "client_id": "681422069451-v4peu07dp1d9ibh5rehr1qcmh81btk5r.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyChTs63Orpo-kSalIOZuY5atvZPv0Bl-fk"
+          "current_key": "AIzaSyCQL7gS8aUJWIRKJbKsYW8OR_nJSj-swBk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "144486697849-n44pr7s8prhim2anrdbcsq5rjl7vlfbr.apps.googleusercontent.com",
+              "client_id": "681422069451-v4peu07dp1d9ibh5rehr1qcmh81btk5r.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

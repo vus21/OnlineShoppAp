@@ -12,6 +12,10 @@
     <string name="confirm_password">Xác nhận mật khẩu</string>
     <string name="sign_up">Đăng ký</string>
     <string name="user_name">Tên tài khoản</string>
+    <string name="name">Họ tên: </string>
+    <string name="name_cus">Họ và tên </string>
+    <string name="phone">Số điện thoại: </string>
+    <string name="address">Địa chỉ: </string>
     <string name="email">Email</string>
     <string name="dont_have_an_account">Chưa có tài khoản?</string>
     <string name="or">Hoặc</string>
@@ -25,12 +29,25 @@
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="buy">"Mua Ngay"</string>
+    <string name="vc">"Phương thức vận chuyển"</string>
     <string name="invalid_username">Tên người dùng không hợp lệ</string>
     <string name="invalid_password">Mật khẩu phải trên 5 ký tự và có ký tự in Hoa</string>
     <string name="login_failed">"Đăng nhập thất bại"</string>
     <string name="total">"Tổng cộng: "</string>
     <string name="vnd">" đ"</string>
 
+
+
+    <!---Zalo Pay -->
+    <string name="lbl_sotien">Số Tiền</string>
+    <string name="lbl_donhang">DEMO</string>
+    <string name="btn_create_order">Tạo Đơn Hàng</string>
+    <string name="txt_amount_init">1000</string>
+    <string name="txt_amount_hint">1000</string>
+    <string name="btn_pay">Thanh Toán</string>
+    <string name="lbl_zptranstoken">zptranstoken</string>
+    <string name="to_webview">To WebView</string>
+    <string name="thanks_user">Cảm ơn bạn đã mua hàng của chúng tôi.</string>
 
     <string name="lorem">"Lorem ipsum dolor sit amet, consectetur adipiscing  elit,
         sed do eiusmod tempor incididunt ut labore et  dolore magna aliqua.

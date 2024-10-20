@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -21,13 +20,13 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.onlineshopp.Adapter.CategoriesAdapter;
 import com.example.onlineshopp.Adapter.Pager2Adapter;
 import com.example.onlineshopp.Adapter.foodAdapter;
+import com.example.onlineshopp.Object.cartItem;
 import com.example.onlineshopp.interface1.InterFace;
 import com.example.onlineshopp.Object.ItemCat;
 import com.example.onlineshopp.Object.ItemFood;
@@ -49,46 +48,20 @@ public class Fragment_Home extends Fragment  implements InterFace {
                 CategoriesAdapter adapter;
                 foodAdapter adapter1;
                 ViewPager2 viewpg2;
-        private InterFace dataPasser;
 
+        private String TAG="Fragment_Home";
 
-    // Gắn interface với activity trong phương thức onAttach
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            dataPasser=(InterFace) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnDataPass");
-        }
-    }
-    // Phương thức để gọi và truyền dữ liệu
         public static Fragment_Home newInstance() {
             return new Fragment_Home();
         }
+        private  View mview;
         @SuppressLint("MissingInflatedId")
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                                  @Nullable Bundle savedInstanceState) {
-            View mview =inflater.inflate(R.layout.fragment_home, container, false);
+             mview =inflater.inflate(R.layout.fragment_home, container, false);
+            setMapping();
 
-                dishes_recycler_view=mview.findViewById(R.id.dishes_recycler_view);
-                category_recycler_view=mview.findViewById(R.id.category_recycler_view);
-                viewpg2=mview.findViewById(R.id.banner_view);
-
-
-            // Đăng ký launcher để nhận kết quả từ Activity khác
-            activityResultLauncher = registerForActivityResult(
-                    new ActivityResultContracts.StartActivityForResult(),
-                    result -> {
-                        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                            // Nhận dữ liệu trả về từ Activity khác
-                            Intent data = result.getData();
-                            String returnedData = data.getStringExtra("key");
-                            // Xử lý dữ liệu, cập nhật giao diện, vv...
-                            Log.d("Fragment_HOME", "Data returned: " + returnedData);
-                        }
-                    });
 
             return mview;
         }
@@ -98,8 +71,10 @@ public class Fragment_Home extends Fragment  implements InterFace {
             super.onActivityCreated(savedInstanceState);
             mViewModel = new ViewModelProvider(this).get(FragmentHomeViewModel.class);
             // TODO: Use the ViewModel
+            mViewModel.loadlistFood(getActivity());
             mViewModel.loadlistCat();
-            mViewModel.loadlistFood();
+                eVentCompoment();
+
 
             category_recycler_view.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
 
@@ -121,36 +96,33 @@ public class Fragment_Home extends Fragment  implements InterFace {
                 @Override
                 public void onChanged(List<ItemFood> itemFoods) {
                     // Khi dữ liệu thay đổi, cập nhật RecyclerView
-                    if (itemFoods != null) {
+                    if (itemFoods != null && !itemFoods.isEmpty()) {
                         adapter1 = new foodAdapter(itemFoods); // Khởi tạo adapter với dữ liệu
                         dishes_recycler_view.setAdapter(adapter1); // Cài đặt adapter cho RecyclerView
+                    }else{
+                        Log.v(TAG, String.valueOf(mViewModel.getlistfood().getValue().size()));
                     }
                 }
             });
             LoadImg();
 
         }
+        @Override
+        public void setMapping() {
+            dishes_recycler_view=mview.findViewById(R.id.dishes_recycler_view);
+            category_recycler_view=mview.findViewById(R.id.category_recycler_view);
+            viewpg2=mview.findViewById(R.id.banner_view);
+        }
+    @Override
+    public void eVentCompoment() {
 
-            @Override
-            public void setMapping() {
-
-            }
-
-            @Override
-            public void eVentCompoment() {
-
-            }
-
-            @Override
-            public void onQuantityChanged() {
-
-            }
+    }
 
     @Override
-    public void onDatapass() {
-        if (dataPasser != null) {
-            dataPasser.onDatapass();
-        }
+    public void onQuantityChanged() {}
+
+    @Override
+    public void getDataCheckBox(List<cartItem> mlistcart) {
     }
 
     private void LoadImg(){
@@ -164,8 +136,9 @@ public class Fragment_Home extends Fragment  implements InterFace {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot child:snapshot.getChildren()){
                             // get picUrls
-                           mlistt.add(child.child("picUrl").getValue(String.class).toString());
-                           Log.v("Fragment_Home\nLoad thanh cong Anh",child.child("picUrl").getValue(String.class).toString());
+                           mlistt.add(child.child("picUrl").getValue(String.class));
+                           Log.v("Fragment_Home\nLoad thanh cong Anh",child.child("picUrl").
+                                   getValue(String.class).toString());
                             }
                           adpa.notifyDataSetChanged();
                         }
