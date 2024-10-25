@@ -61,8 +61,9 @@ public class MainActivity extends AppCompatActivity implements InterFace {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        MainActivityModel.loadBanner();
         MainActivityModel.loadFood();
+        MainActivityModel.loadBanner();
+
         //Khi Chay app  FrameLayout se load Fragment_Home dau` tien
         if(savedInstanceState==null){
             getSupportFragmentManager().beginTransaction().replace(R.id.framelayout_view,new Fragment_Home()).commit();
