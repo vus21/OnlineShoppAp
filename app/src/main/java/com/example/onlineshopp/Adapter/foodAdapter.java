@@ -43,10 +43,10 @@ public class foodAdapter extends RecyclerView.Adapter<foodAdapter.myViewHolder> 
         ItemFood food=mlist.get(position);
 
         holder.binding.texttitlefood.setText(food.getTitle());
-        holder.binding.textcost.setText(String.valueOf(food.getPrice()));
-        holder.binding.textsell.setText(String.valueOf(food.getInventory()));
+        holder.binding.textcost.setText(String.valueOf(food.getPrice())+"đ");
+        holder.binding.textsell.setText(String.valueOf(food.getSell()));
         Glide.with(holder.itemView.getContext()).
-                load(food.getListURL().get(0))
+                load(food.getPicURL())
                 .into(holder.binding.imageViewfood);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import com.example.onlineshopp.Adapter.CategoriesAdapter;
 import com.example.onlineshopp.Adapter.Pager2Adapter;
 import com.example.onlineshopp.Adapter.foodAdapter;
+import com.example.onlineshopp.MainActivityModel;
 import com.example.onlineshopp.Object.cartItem;
 import com.example.onlineshopp.interface1.InterFace;
 import com.example.onlineshopp.Object.ItemCat;
@@ -71,15 +72,12 @@ public class Fragment_Home extends Fragment  implements InterFace {
             super.onActivityCreated(savedInstanceState);
             mViewModel = new ViewModelProvider(this).get(FragmentHomeViewModel.class);
             // TODO: Use the ViewModel
-            mViewModel.loadlistFood(getActivity());
-            mViewModel.loadlistCat();
                 eVentCompoment();
-
+            mViewModel.setListLiveData(MainActivityModel.mlistcat);
 
             category_recycler_view.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
 
             dishes_recycler_view.setLayoutManager(new GridLayoutManager(getActivity(),2,LinearLayoutManager.VERTICAL,false));
-
             mViewModel.getlistCat().observe(getViewLifecycleOwner(), new Observer<List<ItemCat>>() {
                 @Override
                 public void onChanged(List<ItemCat> itemCats) {
@@ -91,7 +89,7 @@ public class Fragment_Home extends Fragment  implements InterFace {
                     }
                 }
             });
-
+            mViewModel.setListLiveDataFood(MainActivityModel.mlistFood);
             mViewModel.getlistfood().observe(getViewLifecycleOwner(), new Observer<List<ItemFood>>() {
                 @Override
                 public void onChanged(List<ItemFood> itemFoods) {

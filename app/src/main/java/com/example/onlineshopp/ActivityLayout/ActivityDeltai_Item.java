@@ -1,5 +1,10 @@
 package com.example.onlineshopp.ActivityLayout;
 
+import static com.example.onlineshopp.Database.ConnectFirebase.db;
+
+import static java.security.AccessController.getContext;
+
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
@@ -21,6 +27,8 @@ import com.example.onlineshopp.Adapter.foodAdapter;
 import com.example.onlineshopp.Database.ConnectSQLite;
 import com.example.onlineshopp.FragmentLayout.FragmentHomeViewModel;
 import com.example.onlineshopp.FragmentLayout.Fragment_Home;
+import com.example.onlineshopp.MainActivityModel;
+import com.example.onlineshopp.R;
 import com.example.onlineshopp.interface1.InterFace;
 import com.example.onlineshopp.MainActivity;
 import com.example.onlineshopp.Object.ItemFood;
@@ -40,6 +48,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +74,7 @@ public class ActivityDeltai_Item extends AppCompatActivity  implements InterFace
 
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public void eVentCompoment() {
 
@@ -80,16 +90,17 @@ public class ActivityDeltai_Item extends AppCompatActivity  implements InterFace
             @Override
             public void onClick(View view) {
                 Intent i =new Intent(ActivityDeltai_Item.this, MainActivity.class);
-                startActivityForResult(i,temptlA.REQUEST_GOHOME);
+                startActivity(i);
             }
         });
 
 
-        Glide.with(this).load(item.getListURL().get(0)).into(binding.imageViewitems);
+        Glide.with(this).load(item.getPicURL()).into(binding.imageViewitems);
         binding.txtTitleitem.setText(item.getTitle());
-        binding.detailitemsell.setText("SL ban ra: "+String.valueOf(item.getInventory()*6));
-        binding.txtratingitem.setText(String.valueOf(item.getInventory()));
-        binding.txtCostitem.setText(String.valueOf(item.getPrice()));
+        binding.detailitemsell.setText("SL ban ra: "+String.valueOf(item.getSell()));
+        binding.txtratingitem.setText("5.5");
+        binding.txtCostitem.setTextColor(getResources().getColor(R.color.red_price,null));
+        binding.txtCostitem.setText(String.valueOf(item.getPrice())+"đ");
         binding.textdescriptionitem.setText(item.getDesc());
 
 
@@ -108,12 +119,10 @@ public class ActivityDeltai_Item extends AppCompatActivity  implements InterFace
 
 
 
-        binding.itemorther.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,
+        binding.itemorther.setLayoutManager(new GridLayoutManager(this,2,LinearLayoutManager.VERTICAL,
                 false));
-//        Fragment_Home fragmentHome=new Fragment_Home();
-//        fragmentHome.loadlistFood(getApplicationContext());
-//        foodAdapter adapter =new foodAdapter(fragmentHome.getMlistfood());
-//        binding.itemorther.setAdapter(adapter);
+        foodAdapter adapter =new foodAdapter(MainActivityModel.mlistFood);
+        binding.itemorther.setAdapter(adapter);
 
 
         binding.imageaddtocart.setOnClickListener(new View.OnClickListener() {
@@ -167,24 +176,23 @@ public class ActivityDeltai_Item extends AppCompatActivity  implements InterFace
         final int[] i = {Integer.parseInt(binding1.editTextText.getText().toString())};
         binding1.textView.setText(item.getTitle());
         binding1.textView3.setText(String.valueOf(item.getPrice()));
-        binding1.textView2.setText(String.valueOf(item.getInventory()));
         binding1.buttonminus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(i[0] >1 && i[0]<item.getInventory()){
-                    i[0] = i[0] -1;
-                    binding1.editTextText.setText(String.valueOf(i[0]));
-                }
+//                if(i[0] >1 && i[0]<item.getInventory()){
+//                    i[0] = i[0] -1;
+//                    binding1.editTextText.setText(String.valueOf(i[0]));
+//                }
             }
         });
 
         binding1.buttonplus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(i[0]<=item.getInventory()){
-                    i[0]=i[0]+1;
-                    binding1.editTextText.setText(String.valueOf(i[0]));
-                }
+//                if(i[0]<=item.getInventory()){
+//                    i[0]=i[0]+1;
+//                    binding1.editTextText.setText(String.valueOf(i[0]));
+//                }
             }
         });
         builder.setView(mview);
@@ -202,7 +210,13 @@ public class ActivityDeltai_Item extends AppCompatActivity  implements InterFace
         binding.btnbuyitem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent i=new Intent(ActivityDeltai_Item.this,)
+                // Đi đến thanh toán với Product này...
+                Intent i=new Intent(ActivityDeltai_Item.this,Activity_payment.class);
+                cartItem items=new cartItem( String.valueOf(item.getID()),item
+                        ,Integer.parseInt(binding1.editTextText.getText().toString()));
+                i.putExtra("Item0",items);
+                i.putExtra("sizecart","1");
+             builder.getContext().startActivity(i);
             }
         });
 
@@ -217,6 +231,8 @@ public class ActivityDeltai_Item extends AppCompatActivity  implements InterFace
             ConnectSQLite connect = new ConnectSQLite(getApplicationContext());
             SQLiteDatabase db = connect.getReadableDatabase();
             Cursor cursor = db.rawQuery("SELECT * FROM " + ConnectSQLite.TABLE_6 + " WHERE ID_Customer = ?", new String[]{temptlA.IDuser});
+
+            //Yêu cầu thông tin người dùng field not null
             if (cursor.moveToFirst()) {
                 if ((cursor.getString(4).isEmpty())) {
                     Log.d("Fragment_Cart", "Vui lòng cập nhật thông tin trước khi mua hàng");
@@ -227,11 +243,6 @@ public class ActivityDeltai_Item extends AppCompatActivity  implements InterFace
     }
 
     private void addToCart(){
-        LocalDateTime currentTime = LocalDateTime.now();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedTime = currentTime.format(formatter);
-
 
         if(!temptlA.IDuser.isEmpty()) {
             cartItem itemFake = new cartItem(String.valueOf(item.getID()), item, 1);
@@ -245,53 +256,29 @@ public class ActivityDeltai_Item extends AppCompatActivity  implements InterFace
             for (int i = 0; i < temptlA.listcart.size(); i++) {
                 Log.v(TAG, "addCart:" + temptlA.listcart.get(i).getQuantity());
             }
-            pushdataFirebaseStore(temptlA.IDuser,itemFake);
+            checkadd(itemFake,temptlA.IDuser);
         }
 
     }
 
-    private  void pushdataFirebaseStore(String id,cartItem itemFake){
-        ConnectSQLite connectSQLite= new ConnectSQLite(getApplicationContext());
-        SQLiteDatabase db=connectSQLite.getWritableDatabase();
-        String query="SELECT * FROM "+ConnectSQLite.TABLE_3+" WHERE ID_Customer = ? ";
-        Cursor cursor =db.rawQuery(query,new String[]{temptlA.IDuser});
-        if(cursor.getCount()>0){
-
-        }
-        checkadd(itemFake,id);
-
-
-    }
     private void checkadd(cartItem itemFake, String id) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Tạo truy vấn để kiểm tra xem tài liệu có tồn tại không
-        Query db123 = db.collection("cartdeltai").whereEqualTo("ID_CUs", temptlA.IDuser);
+        Query db123 = db.collection("cart").whereEqualTo("customerId", temptlA.IDuser);
         db123.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     if (task.getResult() != null && !task.getResult().isEmpty()) {
-                        // Nếu tài liệu tồn tại, lấy ID
+                        // Nếu tài liệu tồn tại, lấy IDcart
                         String existingId = task.getResult().getDocuments().get(0).getId();
                         temptlA.IDCART=existingId;
                         Log.d(TAG, "day la id Cart\n" + existingId);
-                        Additem(existingId,itemFake);
+                        updateCart(existingId,itemFake);
                         return;
                     } else {
-                        // Nếu không có tài liệu nào, thêm tài liệu mới
-                        DocumentReference doc12 = db.collection("cartdeltai").document();
-
-                        Map<String, Object> maps = new HashMap<>();
-                        maps.put("ID", doc12.getId());
-                        maps.put("ID_CUs", temptlA.IDuser);
-
-                        // Lưu tài liệu mới vào Firestore
-                        doc12.set(maps).addOnSuccessListener(aVoid -> {
-                            Log.v(TAG, "Them oi 1 document \n ID: " + doc12.getId());
-                        }).addOnFailureListener(e -> {
-                            Log.w(TAG, "Error: " + e.getMessage());
-                        });
+                      creatednewCart(itemFake);
                     }
                 } else {
                     Log.w("Firestore", "Error getting documents.", task.getException());
@@ -299,62 +286,71 @@ public class ActivityDeltai_Item extends AppCompatActivity  implements InterFace
             }
         });
     }
-
-    private void Additem(String id,cartItem item){
+    private void creatednewCart(cartItem itemfake){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docnew=db.collection("cart").document();
+        //Item cart
+        Map<String, Object> item=new HashMap<>();
+        item.put("ID",itemfake.getItemID());
+        item.put("Quantity",itemfake.getQuantity());
+        item.put("Name",itemfake.getItem().getTitle());
 
-        Map<String,Object> newdata=new HashMap<>();
-        newdata.put("ID_product",item.getItemID());
-        newdata.put("Quantity",item.getQuantity());
-        newdata.put("Product_name",item.getItem().getTitle());
-        // Tạo truy vấn để kiểm tra xem tài liệu có tồn tại không
-        CollectionReference db123 = db.collection("cart_customer").document(id).collection(temptlA.IDuser);
-        DocumentReference document123 = db123.document(item.getItemID());
+        List<Map<String, Object>> items=new ArrayList<>();
+        items.add(item);
+        //create  Field
+        Map<String, Object> maps = new HashMap<>();
 
-        document123.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document != null && document.exists()) {
-                        //  cập nhật số lượng
-                        int currentQuantity = document.getLong("Quantity").intValue();
-                        document123.update("Quantity", currentQuantity + 1)
-                                .addOnSuccessListener(aVoid -> {
-                                    Log.d(TAG, "Số lượng đã được cập nhật thành công cho ID: " + item.getItemID());
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.w(TAG, "Lỗi khi cập nhật số lượng: " + e.getMessage());
-                                });
-                    } else {
-                        // Nếu tài liệu không tồn tại, tạo mới
-                        Map<String, Object> newdata = new HashMap<>();
-                        newdata.put("ID_product", item.getItemID());
-                        newdata.put("Quantity", item.getQuantity());
-                        newdata.put("Product_name", item.getItem().getTitle());
-
-                        document123.set(newdata).addOnSuccessListener(aVoid -> {
-                                    Log.d(TAG, "Tài liệu đã được thêm thành công với ID: " + item.getItemID());
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.w(TAG, "Lỗi khi thêm tài liệu: " + e.getMessage());
-                                });
-                    }
-                } else {
-                    Log.w(TAG, "Lỗi khi kiểm tra tài liệu: " + task.getException());
-                }
-            }
+        maps.put("cartId", docnew.getId());
+        maps.put("customerId", temptlA.IDuser);
+        maps.put("items", items);
+        maps.put("createdAt", temptlA.Datetimecurrent);
+        maps.put("updatedAt", temptlA.Datetimecurrent);
+        docnew.set(maps).addOnSuccessListener(aVoid -> {
+            Log.v(TAG, "Them oi 1 document \n ID: " + docnew.getId());
+        }).addOnFailureListener(e -> {
+            Log.w(TAG, "Error: " + e.getMessage());
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==temptlA.REQUEST_GOHOME){
-            Log.v(TAG,"Da nhan REQUEST_GOHOME");
-        }else {
-            Log.v(TAG,"ko nhan REQUEST_GOHOME");
+    private void updateCart(String cartId,cartItem itemFake){
+        db.collection("cart").document(cartId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    //Field Items
+                    List<Map<String, Object>> items = (List<Map<String, Object>>) documentSnapshot.get("items");
+                    boolean found = false;
 
-        }
+                    for (Map<String, Object> item : items) {
+                        // Item int Items have ID= ItemFake  found==true
+                        if (item.get("ID").equals(itemFake.getItemID())) {
+                            int existingQuantity = ((Long) item.get("Quantity")).intValue();
+                            item.put("Quantity", existingQuantity + itemFake.getQuantity());
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        Map<String, Object> newItem = new HashMap<>();
+                        newItem.put("ID", itemFake.getItemID());
+                        newItem.put("Quantity",itemFake.getQuantity());
+                        items.add(newItem);
+                    }
+
+
+                    //Update time when User select
+                    db.collection("cart").document(cartId)
+                            .update("items", items)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(getApplicationContext(), "Đã cập nhật giỏ hàng", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getApplicationContext(), "Lỗi khi cập nhật giỏ hàng: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getApplicationContext(), "Lỗi khi đọc giỏ hàng: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }

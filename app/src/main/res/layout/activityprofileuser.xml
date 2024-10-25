@@ -19,7 +19,7 @@
             android:src="@drawable/back"
             android:layout_marginBottom="6dp"
             />
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -30,16 +30,36 @@
             android:id="@+id/profileImageView"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:src="@drawable/user_circle_svgrepo_com" />
+            android:src="@drawable/user_circle_svgrepo_com"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/changeimgprofile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/camera_change"
+            app:layout_constraintBottom_toBottomOf="@+id/profileImageView"
+            app:layout_constraintEnd_toEndOf="@+id/profileImageView"
+            app:layout_constraintStart_toEndOf="@+id/profileImageView"
+            app:layout_constraintTop_toBottomOf="@+id/profileImageView" />
 
         <TextView
             android:id="@+id/userNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:maxWidth="200dp"
+            android:layout_marginTop="40dp"
+            android:maxLength="3"
+            android:ellipsize="end"
+            android:text="awdawd"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginStart="16dp"/>
-    </LinearLayout>
+            app:layout_constraintStart_toEndOf="@+id/profileImageView"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -62,7 +82,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:background="@android:color/transparent"
             android:padding="8dp"/>
         <TextView
             android:layout_width="wrap_content"
@@ -77,7 +96,6 @@
             android:maxLength="3"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:background="@android:color/transparent"
             android:padding="8dp"/>
 
         <TextView
@@ -92,7 +110,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:background="@android:color/transparent"
             android:padding="8dp"/>
 
         <TextView
@@ -107,7 +124,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:background="@android:color/transparent"
             android:padding="8dp"/>
 
         <TextView
@@ -122,7 +138,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:background="@android:color/transparent"
             android:padding="8dp"/>
 
         <TextView

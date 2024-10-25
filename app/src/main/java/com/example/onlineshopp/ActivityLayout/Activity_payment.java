@@ -9,35 +9,25 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.onlineshopp.Adapter.itemselectAdapter;
 import com.example.onlineshopp.Database.ConnectFirebase;
-import com.example.onlineshopp.MainActivity;
-import com.example.onlineshopp.MainViewModel;
 import com.example.onlineshopp.Object.ItemCat;
 import com.example.onlineshopp.Object.cartItem;
 import com.example.onlineshopp.R;
 import com.example.onlineshopp.Zalopay.Api.CreateOrder;
 import com.example.onlineshopp.databinding.ActivityPaymentBinding;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.example.onlineshopp.temptlA;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -53,18 +43,17 @@ import vn.zalopay.sdk.Environment;
 import vn.zalopay.sdk.ZaloPayError;
 import vn.zalopay.sdk.ZaloPaySDK;
 import vn.zalopay.sdk.listeners.PayOrderListener;
-
 public class Activity_payment extends AppCompatActivity  {
     ActivityPaymentBinding binding;
     private final String TAG="Activity_payment";
     private ArrayList<String> listmethods=new ArrayList<>();
     private ArrayList<Integer> listfreeship=new ArrayList<>();
     private  int selectionPosition =0;
+    private  int freeship=0;
 
     private List<ItemCat> itemselect =new ArrayList<>();
 
     private itemselectAdapter adapter;
-    private String[] rows;
     private List<cartItem> mlist=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +65,7 @@ public class Activity_payment extends AppCompatActivity  {
         StrictMode.ThreadPolicy policy = new
                 StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        FirebaseAuth mAuth=FirebaseAuth.getInstance();
-        FirebaseUser user=mAuth.getCurrentUser();
-        Log.d(TAG,user.getUid());
+        Log.d(TAG,temptlA.user.getID());
         Intent getint=getIntent();
         if (getint!=null){
          int size;
@@ -104,7 +91,7 @@ public class Activity_payment extends AppCompatActivity  {
         listfreeship.add(15000);
         ArrayAdapter<String> adapter=new ArrayAdapter<>(getApplication(),R.layout.itempayment,listmethods);
         binding.methodship.setAdapter(adapter);
-        setupProfile("51wdvJisLrhoMJmWCgSKG2fjfL92");
+        setupProfile(temptlA.IDuser);
 
 
         binding.methodship.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -132,91 +119,106 @@ public class Activity_payment extends AppCompatActivity  {
             public void onClick(View v) {
                 Intent i1=new Intent(getApplicationContext(),Activity_notifaction.class);
                 Log.d(TAG, String.valueOf(selectionPosition));
-                    switch (selectionPosition){
+                if(binding.editTextaddress.getText().toString().isEmpty()
+                        || binding.editTextphone.getText().toString().isEmpty() || binding.editTextTextname.getText().toString().isEmpty()){
+                    Toast.makeText(getApplicationContext(),"Không được để  chống",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    sendataIntent(i1, mlist);
+                    i1.putExtra("payment", selectionPosition);
+                    String paymentchoose = (selectionPosition == 0 ? "COD" :
+                            (selectionPosition == 1 ? "ZaloPay" :
+                                    (selectionPosition == 2 ? "MoMo" :
+                                            (selectionPosition == 3 ? "TT so 3" : "Du lieu khac"))));
+                    Log.d(TAG, paymentchoose);
+                    switch (selectionPosition) {
                         //Methods COD
                         case 0:
-                                    i1.putExtra("result",R.string.thanks_user);
+                            i1.putExtra("result", R.string.thanks_user);
+                            startActivity(i1);
                             break;
-                            //Methods ZaloPay
+                        //Methods ZaloPay
                         case 1:
                             CreateOrder orderApi = new CreateOrder();
-
                             try {
-                                JSONObject data = orderApi.createOrder(rows[0],binding.editTextTextname.getText().toString());
-                                Log.d("Amount", "900");
+                                JSONObject data = orderApi.createOrder(String.valueOf(totalbill(mlist) + freeship), binding.editTextTextname.getText().toString());
+                                Log.d("Amount", String.valueOf(totalbill(mlist) + freeship));
                                 String code = data.getString("return_code");
                                 Toast.makeText(getApplicationContext(), "return_code: " + code, Toast.LENGTH_LONG).show();
 
                                 if (code.equals("1")) {
                                     //zp+trans_token this is token
-                                    String token =data.getString("zp_trans_token").toString();
-                                    Log.d("Token",data.getString("zp_trans_token")+"\n"+code+"\nAmount: "+"900");
-                                    ZaloPaySDK.getInstance().payOrder(Activity_payment.this, token, "demozpdk://app", new PayOrderListener() {
-                                        @Override
-                                        public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    new AlertDialog.Builder(getApplication())
-                                                            .setTitle("Payment Success")
-                                                            .setMessage(String.format("TransactionId: %s - TransToken: %s", transactionId, transToken))
-                                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    String token = data.getString("zp_trans_token").toString();
+                                    Log.d("Token", data.getString("zp_trans_token") + "\n" + code + "\nAmount: " + "900");
+                                    ZaloPaySDK.getInstance()
+                                            .payOrder(Activity_payment.this, token,
+                                                    "demozpdk://app", new PayOrderListener() {
+                                                        @Override
+                                                        public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
+                                                            runOnUiThread(new Runnable() {
                                                                 @Override
-                                                                public void onClick(DialogInterface dialog, int which) {
-                                                                    i1.putExtra("result",R.string.thanks_user);
+                                                                public void run() {
+                                                                    new AlertDialog.Builder(getApplication())
+                                                                            .setTitle("Payment Success")
+                                                                            .setMessage(String.format("TransactionId: %s - TransToken: %s", transactionId, transToken))
+                                                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                                                @Override
+                                                                                public void onClick(DialogInterface dialog, int which) {
+
+                                                                                }
+                                                                            })
+                                                                            .setNegativeButton("Cancel", null).show();
+                                                                    Log.v(TAG, "Thanh toan thanh cong roi ban oi \n\n\\n\n\n\n\n\n");
                                                                 }
-                                                            })
-                                                            .setNegativeButton("Cancel", null).show();
-                                                }
-
-                                            });
-                                        }
-
-                                        @Override
-                                        public void onPaymentCanceled(String zpTransToken, String appTransID) {
-                                            new AlertDialog.Builder(getApplication())
-                                                    .setTitle("User Cancel Payment")
-                                                    .setMessage(String.format("zpTransToken: %s \n", zpTransToken))
-                                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            });
                                                         }
-                                                    })
-                                                    .setNegativeButton("Cancel", null).show();
-                                        }
 
-                                        @Override
-                                        public void onPaymentError(ZaloPayError zaloPayError, String zpTransToken, String appTransID) {
-                                            new AlertDialog.Builder(getApplication())
-                                                    .setTitle("Payment Fail")
-                                                    .setMessage(String.format("ZaloPayErrorCode: %s \nTransToken: %s", zaloPayError.toString(), zpTransToken))
-                                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                         @Override
-                                                        public void onClick(DialogInterface dialog, int which) {
+                                                        public void onPaymentCanceled(String zpTransToken, String appTransID) {
+                                                            new AlertDialog.Builder(getApplication())
+                                                                    .setTitle("User Cancel Payment")
+                                                                    .setMessage(String.format("zpTransToken: %s \n", zpTransToken))
+                                                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                                        @Override
+                                                                        public void onClick(DialogInterface dialog, int which) {
+                                                                        }
+                                                                    })
+                                                                    .setNegativeButton("Cancel", null).show();
                                                         }
-                                                    })
-                                                    .setNegativeButton("Cancel", null).show();
-                                        }
-                                    });
+
+                                                        @Override
+                                                        public void onPaymentError(ZaloPayError zaloPayError, String zpTransToken, String appTransID) {
+                                                            new AlertDialog.Builder(getApplication())
+                                                                    .setTitle("Payment Fail")
+                                                                    .setMessage(String.format("ZaloPayErrorCode: %s \nTransToken: %s", zaloPayError.toString(), zpTransToken))
+                                                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                                        @Override
+                                                                        public void onClick(DialogInterface dialog, int which) {
+                                                                        }
+                                                                    })
+                                                                    .setNegativeButton("Cancel", null).show();
+                                                        }
+                                                    });
+                                } else {
+                                    Log.v(TAG, code.toString());
                                 }
 
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-
                             break;
 
-                            //momo
+                        //momo
                         case 2:
-
-                            i1.putExtra("result",R.string.thanks_user);
+                            i1.putExtra("result", R.string.thanks_user);
+                            startActivity(i1);
                             break;
                         case 3:
-                            i1.putExtra("result",R.string.thanks_user);
+                            i1.putExtra("result", R.string.thanks_user);
+                            startActivity(i1);
                             break;
                     }
-                    startActivity(i1);
-
+                }
 
             }
         });
@@ -232,52 +234,65 @@ public class Activity_payment extends AppCompatActivity  {
         adapter=new itemselectAdapter(mlist);
         binding.recyitembuy.setAdapter(adapter);
         binding.recyitembuy.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        int total=0;
-        for(cartItem item:mlist){
-            total+=(item.getQuantity()*item.getItem().getPrice());
-        }
+
         String cut=binding.totalPrice.getText().toString();
-        rows=cut.split("đ");
-        binding.totalPrice.setText(String.valueOf(total)+"đ");
+        binding.totalPrice.setText(String.valueOf(totalbill(mlist)+freeship)+"đ");
 
     }
     private void setFreeship(int i){
             switch (i){
                 case 0:
                     binding.shippingfree.setText(String.valueOf(listfreeship.get(0)));
+                    freeship=listfreeship.get(0);
+
                     break;
                 case 1:
                     binding.shippingfree.setText(String.valueOf(listfreeship.get(1)));
+                    freeship=listfreeship.get(1);
+
                     break;
                 case 2:
                     binding.shippingfree.setText(String.valueOf(listfreeship.get(2)));
+                    freeship=listfreeship.get(2);
+
                     break;
                 default:
                     binding.shippingfree.setText(String.valueOf(listfreeship.get(3)));
+                    freeship=listfreeship.get(3);
                     break;
             }
+            binding.totalPrice.setText(String.valueOf(totalbill(mlist)+freeship)+"đ");
     }
 
+    @NonNull
+    private  int totalbill(List<cartItem>  mlist1){
+        int total=0;
+        for(cartItem item:mlist1){
+            total+=(item.getQuantity()*item.getItem().getPrice());
+        }
 
+        return total;
+    }
 
     private void setupProfile(String id){
         ConnectFirebase.setDb();
 
-        ConnectFirebase.db.collection("customers").document(id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        ConnectFirebase.db.collection("customers").document(id).
+                get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
                     DocumentSnapshot snapshot=task.getResult();
                     if(snapshot!=null && snapshot.exists()){
-                    Log.v("TAG",(String)snapshot.get("ID_Customer") +
-                            "\nNameuser: "+(String)snapshot.get("Nameuser")+
+                    Log.v("TAG",(String)snapshot.get("uid") +
+                            "\nNameuser: "+(String)snapshot.get("fullName")+
                             "\nPhone: "+(String) snapshot.get("Phone")+
-                            "\nRoleid: "+(Long)snapshot.get("Roleid"));
-                    binding.editTextTextname.setText((String)snapshot.get("Nameuser"));
+                            "\nRoleid: "+(Long)snapshot.get("roleid"));
+                    binding.editTextTextname.setText((String)snapshot.get("fullName"));
                     binding.editTextphone.setText((String)snapshot.get("Phone"));
                         if(snapshot.contains("Address")){
-                            Log.v("TAG", (String) snapshot.get("Address"));
-                            binding.editTextphone.setText((String)snapshot.get("Address"));
+                            Log.v("TAG", (String) snapshot.get("address"));
+                            binding.editTextphone.setText((String)snapshot.get("address"));
                         }else {
                             Log.v("TAG", "Khong ton tai Field: Address");
                         }
@@ -296,6 +311,32 @@ public class Activity_payment extends AppCompatActivity  {
         super.onNewIntent(intent);
         ZaloPaySDK.getInstance().onResult(intent);
     }
-
-
+    private void sendataIntent(Intent data,List<cartItem> mlist1){
+        for (int i=0;i<mlist1.size();i++){
+            data.putExtra("Items"+String.valueOf(i),mlist1.get(i));
+        }
+        data.putExtra("size",mlist1.size());
+        data.putExtra("name",binding.editTextTextname.getText().toString());
+        data.putExtra("phone",binding.editTextphone.getText().toString());
+        data.putExtra("address",binding.editTextaddress.getText().toString());
+        if(!binding.notei.getText().toString().isEmpty()){
+            data.putExtra("note",binding.notei.getText().toString());
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode== temptlA.REQUEST_BUYP){
+            if(resultCode==RESULT_OK){
+                Log.v(TAG,"Cai này nhận dc result OKE");
+            }else{
+                Log.v(TAG,"Cai này nhận dc result OKE");
+            }
+                if( data != null){
+                    cartItem items=(cartItem)data.getSerializableExtra("Item0") ;
+                    mlist.add(items);
+                    Log.v(TAG,items.getItemID()+"\nQuantity: "+items.getQuantity());
+                }
+        }
+    }
 }

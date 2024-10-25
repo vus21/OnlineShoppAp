@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-10-18T10:50:47.607978300Z">
+        <DropdownSelection timestamp="2024-10-23T06:42:27.474887400Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="Default" identifier="serial=emulator-5554;connection=2dcdc9d4" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=VK5TA6MFNVR4FI8T" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -16,7 +16,10 @@
       <SelectionState runConfigName="MainViewModel">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="Activity_payment">
+      <SelectionState runConfigName="Mainactivity">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="MainActivity">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

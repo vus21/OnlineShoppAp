@@ -3,13 +3,13 @@ package com.example.onlineshopp.Object;
 import java.io.Serializable;
 
 public class User implements Serializable {
-    private  String ID,Name,Gender,Date,Address,Phone;
+    private  String ID,Name,Gender,Date,Address,Phone,img;
     private  int Role;
 
-    public User() {
-    }
 
-    public User(String ID, String name, String gender, String date, String address, String phone, int role) {
+
+    public User(String ID, String name, String gender,
+                String date, String address, String phone, int role,String imguser) {
         this.ID = ID;
         Name = name;
         Gender = gender;
@@ -17,6 +17,16 @@ public class User implements Serializable {
         Address = address;
         Phone = phone;
         Role = role;
+       this.img=imguser;
+    }
+
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
     }
 
     public String getID() {

@@ -2,11 +2,17 @@ package com.example.onlineshopp.ActivityLayout;
 
 import static java.security.AccessController.getContext;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -16,10 +22,13 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.onlineshopp.Database.ConnectFirebase;
 import com.example.onlineshopp.Database.ConnectSQLite;
 import com.example.onlineshopp.Object.cartItem;
 import com.example.onlineshopp.R;
@@ -46,6 +55,7 @@ import java.util.Map;
 public class Activity_profileuser extends AppCompatActivity implements InterFace {
     ActivityprofileuserBinding binding;
     private  final String TAG="Activity_profileuser";
+    private  Bitmap bitmap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         binding=ActivityprofileuserBinding.inflate(getLayoutInflater());
@@ -56,43 +66,57 @@ public class Activity_profileuser extends AppCompatActivity implements InterFace
         setMapping();
         eVentCompoment();
             if(temptlA.IDuser!=null) {
-                    getDatauser();
 
             }else{
                 Log.w(TAG, "No user is signed in");
                 Toast.makeText(getApplicationContext(), "Vui lòng đăng nhập để xem thông tin cá nhân", Toast.LENGTH_SHORT).show();
             }
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-
-    }
-
     @Override
     public void setMapping() {
     }
 
     @Override
     public void eVentCompoment() {
-
+            setProfile();
             binding.imgback.setOnClickListener(
                     view -> {finish();});
             binding.btnsaveprofile.setOnClickListener(view -> {
-                String name,phone,address,date;
+                String name,phone,address,date,gender;
                 name=binding.userNameTextView.getText().toString();
                 phone=binding.phoneNumberEditText.getText().toString();
                 address=binding.addressEditText.getText().toString();
                 date=binding.birthdayEditText.getText().toString();
-                updateProfile(name,phone,address,date);
+                gender=binding.gender.getText().toString();
+                updateProfile(name,phone,address,gender,date);
                 finish();
             });
 
 
             binding.calendarButton.setOnClickListener(view -> {openDialogDate();});
+
+
+            binding.profileImageView.setOnClickListener(view -> {
+                    String path= Environment.getExternalStorageDirectory()+"/Download";
+                        Uri path1=Uri.parse(path);
+                        Intent i=new Intent(Intent.ACTION_PICK);
+                        i.setDataAndType(path1,"*/*");
+                        startActivity(i);
+            });
+            binding.changeimgprofile.setOnClickListener(view -> {
+
+            });
     }
+
+
+    private void setProfile(){
+        binding.userNameTextView.setText(temptlA.user.getName());
+        binding.phoneNumberEditText.setText(temptlA.user.getPhone());
+        binding.addressEditText.setText(temptlA.user.getAddress());
+        binding.birthdayEditText.setText(temptlA.user.getDate());
+        binding.gender.setText(temptlA.user.getGender());
+    }
+
 
     @Override
     public void onQuantityChanged() {
@@ -106,82 +130,41 @@ public class Activity_profileuser extends AppCompatActivity implements InterFace
     }
 
 
-    private  void getDatauser() {
-        ConnectSQLite connect = new ConnectSQLite(getApplicationContext());
 
-        SQLiteDatabase database = connect.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT customer.*, account.Roleid FROM customer JOIN account " +
-                "ON account.ID_Customer=customer.ID_Customer " +
-                " WHERE customer.ID_Customer= ?", new String[]{temptlA.IDuser});
 
-        if (cursor.moveToFirst()) {
-            Log.v(TAG, cursor.getString(0) + "\n" +
-                    cursor.getString(1) + "\n" +
-                    cursor.getString(2) + "\n" +
-                    cursor.getString(3) + "\n" +
-                    cursor.getString(4) + "\n" +
-                    cursor.getString(5) + "\n" +
-                    cursor.getString(6) + "\n" +
-                    cursor.getString(7) + "\n");
-            binding.emailEditText.setText(cursor.getString(5));
-            binding.phoneNumberEditText.setText(cursor.getString(3));
-            if (Integer.parseInt(cursor.getString(7)) == 2) {
-                binding.fullNameEditText.setText(cursor.getString(1) + "\nKhách hàng");
-            } else {
-                binding.fullNameEditText.setText(cursor.getString(1) + "\nAdmin");
-            }
-            if (cursor.getString(2) == null && cursor.getString(4) == null) {
-                Log.v(TAG, "null123");
-            } else {
-                Log.v(TAG, "null1232222");
-                binding.addressEditText.setText(cursor.getString(4));
-                binding.birthdayEditText.setText(cursor.getString(2));
-            }
-        }
-        else{
-            getDatauserFirebase();
-        }
-    }
     private void getDatauserFirebase(){
-        FirebaseFirestore db=FirebaseFirestore.getInstance();
-        DocumentReference documentReference=db.collection("customers").document(temptlA.IDuser);
+        binding.fullNameEditText.setText(temptlA.user.getName());
+        binding.userNameTextView.setText(temptlA.user.getName());
+        binding.addressEditText.setText(temptlA.user.getAddress());
+        binding.gender.setText(temptlA.user.getGender());
+        binding.phoneNumberEditText.setText(temptlA.user.getPhone());
+        binding.birthdayEditText.setText(temptlA.user.getDate());
+        ConnectFirebase.db =FirebaseFirestore.getInstance();
 
-        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()){
-                    DocumentSnapshot snapshot=task.getResult();
-                    if(snapshot!=null && snapshot.exists()){
-                        binding.userNameTextView.setText(snapshot.get("Nameuser").toString());
-                        binding.phoneNumberEditText.setText(snapshot.get("Phone").toString());
-                        if(snapshot.contains("Address"))
-                        binding.userNameTextView.setText(snapshot.get("Address").toString());
-                        if (snapshot.contains("Gender")){
-                            int Gender = snapshot.getLong("Gender").intValue();
-                            if(Gender==1){
-                                binding.gender.setText("Nữ");
-                            }else{
-                                binding.gender.setText("Nam");
-                            }
+        ConnectFirebase.db.collection("accounts").whereEqualTo("uid",temptlA.user.getID()).get().addOnCompleteListener(
+                new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if(task.isSuccessful()){
+                            binding.emailEditText.setText(task.getResult().getDocuments().get(0).get("email",String.class));
                         }
                     }
                 }
-            }
-        });
-
+        );
     }
-    private void updateProfile(String name,String phone,String address,String datebirth){
+    private void updateProfile(String name,String phone,String address,String gender,String datebirth){
         Map<String,Object> newdata=new HashMap<>();
 
-        newdata.put("Nameuser",name);
+        newdata.put("fullName",name);
         newdata.put("Phone",phone);
-        newdata.put("Address",address);
-        newdata.put("DateBirth",datebirth);
+        newdata.put("address",address);
+        newdata.put("birthday",datebirth);
+        newdata.put("gender",gender);
 
 
         FirebaseFirestore db=FirebaseFirestore.getInstance();
 
-        DocumentReference document=db.collection("customers").document(temptlA.IDuser);
+        DocumentReference document=db.collection("customers").document(temptlA.user.getID());
 
         document.update(newdata).addOnSuccessListener(aVoid->{
             Log.v(TAG,"Sua thanh cong");
@@ -206,7 +189,29 @@ public class Activity_profileuser extends AppCompatActivity implements InterFace
         },n.getDate(),n.getMonth(),n.getDay());
 
         datePicker.show();
+    }
 
+    private void openCamera(){
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this,new String[]{
+                    Manifest.permission.CAMERA},temptlA.REQUEST_CAMERA);
+        }else{
+            Intent i=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(i,temptlA.REQUEST_CAMERA);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            // Xử lý mở camera
+            if (requestCode == temptlA.REQUEST_CAMERA) {
+                bitmap = (Bitmap) data.getExtras().get("data");
+                binding.profileImageView.setImageBitmap(bitmap);
+            }
+        }
     }
 
 }

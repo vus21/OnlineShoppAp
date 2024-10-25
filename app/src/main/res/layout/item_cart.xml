@@ -9,23 +9,27 @@
 
     <ImageView
         android:id="@+id/cart_item_image"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.163" />
 
     <TextView
         android:id="@+id/cart_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="8dp"
         android:maxWidth="300dp"
-        android:textSize="17sp"
+        android:text="dă"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/imageView4"
+        app:layout_constraintHorizontal_bias="0.038"
         app:layout_constraintStart_toEndOf="@id/cart_item_image"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,13 +41,14 @@
         android:layout_marginTop="4dp"
         android:textColor="#B60909"
         android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/cart_item_image"
         app:layout_constraintTop_toBottomOf="@id/cart_item_name" />
 
     <TextView
         android:id="@+id/cart_item_quantity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="4dp"
+        android:layout_height="15dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         app:layout_constraintStart_toEndOf="@id/cart_item_image"
@@ -56,6 +61,7 @@
         android:layout_marginTop="48dp"
         android:layout_marginEnd="4dp"
         app:layout_constraintEnd_toStartOf="@+id/imageView4"
+        app:layout_constraintStart_toEndOf="@+id/cart_item_image"
         app:layout_constraintTop_toBottomOf="@+id/cart_item_name">
 
         <ImageView
@@ -79,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            app:srcCompat="@android:drawable/ic_notification_clear_all" />
+            app:srcCompat="@android:drawable/ic_menu_add" />
 
     </TableRow>
 
@@ -87,11 +93,9 @@
         android:id="@+id/imageView4"
         android:layout_width="60dp"
         android:layout_height="120dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="6dp"
         app:layout_constraintEnd_toStartOf="@+id/checkBox2"
-        app:layout_constraintStart_toEndOf="@+id/cart_item_name"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@drawable/recycle_bin" />
 

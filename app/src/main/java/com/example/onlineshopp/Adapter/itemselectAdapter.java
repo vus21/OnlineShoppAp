@@ -34,7 +34,7 @@ public class itemselectAdapter extends RecyclerView.Adapter<itemselectAdapter.My
                 cartItem newitem= mlist.get(position);
 
         Glide.with(holder.itemView.getContext()).
-                load(newitem.getItem().getListURL().get(0)).
+                load(newitem.getItem().getPicURL()).
                 into(holder.binding.imageView6);
 
         holder.binding.textTitle.setText(newitem.getItem().getTitle());

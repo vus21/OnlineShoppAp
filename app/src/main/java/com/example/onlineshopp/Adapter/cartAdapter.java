@@ -58,9 +58,9 @@ public class cartAdapter extends RecyclerView.Adapter<cartAdapter.myItemHolder> 
         cartItem item =mlist.get(position);
 
         holder.tv.setText(item.getItem().getTitle());
-        holder.tv1.setText(String.valueOf(item.getItem().getPrice()));
-        holder.tv2.setText("So luong: "+String.valueOf(item.getItem().getInventory()));
-        Glide.with(holder.itemView.getContext()).load(item.getItem().getListURL().get(0)).into(holder.img);
+        holder.tv1.setText(String.valueOf(item.getItem().getPrice())+"đ");
+        holder.tv2.setText("So luong: "+String.valueOf(item.getItem().getSell()));
+        Glide.with(holder.itemView.getContext()).load(item.getItem().getPicURL()).into(holder.img);
 
 
         holder.binding.imageViewminus.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +148,7 @@ public class cartAdapter extends RecyclerView.Adapter<cartAdapter.myItemHolder> 
         newdata.put("Quantity",item.getQuantity());
         newdata.put("Product_name",item.getItem().getTitle());
         // Tạo truy vấn để kiểm tra xem tài liệu có tồn tại không
-        CollectionReference db123 = db.collection("cart_customer")
+        CollectionReference db123 = db.collection("cart")
                 .document(temptlA.IDCART).collection(temptlA.IDuser);
         DocumentReference document123 = db123.document(item.getItemID());
         document123.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -169,6 +169,8 @@ public class cartAdapter extends RecyclerView.Adapter<cartAdapter.myItemHolder> 
                     Log.w("cartAdapter", "Lỗi khi kiểm tra tài liệu: " + task.getException());
                 }
             }
+        }).addOnFailureListener(e -> {
+            Log.e("Firebase cartAdapter Line 173",e.getMessage());
         });
     }
 
@@ -186,7 +188,7 @@ public class cartAdapter extends RecyclerView.Adapter<cartAdapter.myItemHolder> 
        document123.delete().addOnSuccessListener(aVoid->{
            Log.d("cartAdapter","remove thanh cong "+item.getItemID());
        }).addOnFailureListener(e -> {
-           Log.w("cartAdapter 188","Remove That bai");
+           Log.w("cartAdapter Line 191","Remove That bai");
        });
     }
 

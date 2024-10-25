@@ -5,72 +5,51 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent">
-
-
-
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/my_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:layout_constraintTop_toTopOf="parent"/>
-    <TextView
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="DashBoard"
-        tools:layout_editor_absoluteX="28dp"
-        tools:layout_editor_absoluteY="45dp" />
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16sp"
+    android:layout_marginBottom="16sp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tong so san pham"
-        android:id="@+id/totalitembuy"
-        tools:layout_editor_absoluteX="28dp"
-        tools:layout_editor_absoluteY="83dp" />
-
-    <TextView
-        android:id="@+id/totalitembuyinday"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="so hang ban ra"
-        tools:layout_editor_absoluteX="262dp"
-        tools:layout_editor_absoluteY="83dp" />
-
-    <TextView
-        android:id="@+id/allproductisdelivery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="so don hang dang giao"
-        tools:layout_editor_absoluteX="28dp"
-        tools:layout_editor_absoluteY="141dp" />
-
-    <TextView
-        android:id="@+id/allproductsdesuccessess"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="39dp"
-        android:text="so don hang da giao"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="20dp"
+        android:text="Ngày: 19/03/2024"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView7"
-        tools:ignore="DuplicateIds" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cac mat hang dang ban"
-        tools:layout_editor_absoluteX="28dp"
-        tools:layout_editor_absoluteY="180dp" />
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="8dp"
+        android:text="Số đơn trong ngày"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="0"
+        android:textAlignment="center"
+        android:textSize="32sp"
+        app:layout_constraintEnd_toEndOf="@+id/textView8"
+        app:layout_constraintStart_toStartOf="@+id/textView8"
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+</androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="409dp"
-        android:layout_height="480dp"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="213dp" />
+        android:id="@+id/allproduct"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="245dp" />
 </LinearLayout>

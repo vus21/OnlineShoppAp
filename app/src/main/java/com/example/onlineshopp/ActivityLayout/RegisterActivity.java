@@ -128,12 +128,6 @@ public class RegisterActivity extends AppCompatActivity implements InterFace {
             @Override
             public void afterTextChanged(Editable editable) {
                     checkpass(editable.toString());
-                    if (!editable.toString().equals(passwordInputLayout.getEditText().getText().toString())){
-                        Log.e("RegisterActivity","Mật khẩu  khớp.. \npass: "+editable.toString()+"\npass1: "+passwordInputLayout.getEditText().getText().toString());
-                    }else{
-                        Log.e("RegisterActivity","Mật khẩu không khớp.. \npass: "+editable.toString()+"\npass1: "+passwordInputLayout.getEditText().getText().toString());
-
-                    }
             }
         });
     }
@@ -166,10 +160,8 @@ public class RegisterActivity extends AppCompatActivity implements InterFace {
         if (email.isEmpty() || mobileNumber.isEmpty() || password.isEmpty()
                 || confirmPassword.isEmpty()) {
             Toast.makeText(this, "Vui lòng điền đầy đủ thông tin", Toast.LENGTH_SHORT).show();
-            return;
         }else{
                 Log.v("RegisterActivity", "Email này đã tồn tại!!.");
-                Toast.makeText(getApplicationContext(), "Email này đã tồn tại, vui lòng nhập Email khác", Toast.LENGTH_LONG).show();
                 checkEmail(email,password,mobileNumber,user);
             }
 
@@ -183,10 +175,9 @@ public class RegisterActivity extends AppCompatActivity implements InterFace {
                 if(task.isSuccessful()){
                         Log.d(TAG,"createUserWithEmail:success");
                         FirebaseUser user1=mAuth.getCurrentUser();
-
                     Log.i("RegisterActivity_Customer","ID: "+user1.getUid()+"\nName_cus: "+user+"\nPhone: "+moblieNumber+"\nEmail: "+email+"\nTime: "+temptlA.Datetimecurrent);
-                    Toast.makeText(getApplicationContext(),"Đăng ký thành công, Vui lòng đăng nhập lại!!!",Toast.LENGTH_LONG).show();
                     saveUsertoFireBase(user1,user,moblieNumber,email,pass);
+                    Toast.makeText(getApplicationContext(),"Đăng ký thành công, Vui lòng đăng nhập lại!!!",Toast.LENGTH_LONG).show();
                 }else{
                     Log.e(TAG,"createUserWithEmail:failure");
                     Toast.makeText(getApplicationContext(), "Đăng ký thất bại: " + task.getException().getMessage(),
@@ -198,15 +189,18 @@ public class RegisterActivity extends AppCompatActivity implements InterFace {
     private void saveUsertoFireBase(FirebaseUser user1,String user,String moblieNumber,String email,String pass){
         Map<String,Object> newData=new HashMap<>();
         Map<String,Object> newData1=new HashMap<>();
-        newData.put("ID_Customer",user1.getUid());
-        newData.put("Name_cus",user);
+        newData.put("uid",user1.getUid());
+        newData.put("fullName",user);
         newData.put("Phone",moblieNumber);
-        newData.put("Email",email);
-        newData.put("updateDate", temptlA.Datetimecurrent);
-        newData1.put("ID_Customer",user1.getUid());
-        newData1.put("Nameuser",email);
-        newData1.put("Password",pass);
-        newData1.put("Roleid",2);
+        newData.put("email",email);
+        newData.put("updatedAt", temptlA.Datetimecurrent);
+        newData.put("roleid", 2);
+
+        //Account
+        newData1.put("uid",user1.getUid());
+        newData1.put("email",email);
+        newData1.put("password",pass);
+        newData1.put("roleid",2);
         newData1.put("UpdateAt",temptlA.Datetimecurrent);
         DocumentReference userRef =db.collection("customers").document(user1.getUid());
         DocumentReference accRef =db.collection("accounts").document(user1.getUid());
@@ -215,10 +209,7 @@ public class RegisterActivity extends AppCompatActivity implements InterFace {
             transaction.set(userRef, newData);
             return null;
         }).addOnSuccessListener(aVoid -> {
-            Log.d(TAG, "User profile created in both accounts and customers collections.");
             Toast.makeText(getApplicationContext(), "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
-
-            savetoSQLite(user1.getUid(),user,moblieNumber,email,pass);
             finish();
         }).addOnFailureListener(e -> {
             Log.w(TAG, "Error writing user data", e);
@@ -241,24 +232,7 @@ public class RegisterActivity extends AppCompatActivity implements InterFace {
         });
     }
 
-    private void savetoSQLite(String Uid,String user,String moblieNumber,String email,String pass){
-        ConnectSQLite connect=new ConnectSQLite(getApplicationContext());
-        SQLiteDatabase db= connect.getWritableDatabase();
-        ContentValues values= new ContentValues();
-        values.put("ID_Customer",Uid);
-        values.put("Name_cus",user);
-        values.put("Phone",moblieNumber);
-        values.put("Email",email);
-        values.put("updateDate", temptlA.Datetimecurrent);
-        db.insert(ConnectSQLite.TABLE_6,null,values);
-        ContentValues values1=new ContentValues();
-        values1.put("ID_Customer",Uid);
-        values1.put("Nameuser",email);
-        values1.put("Password",pass);
-        values1.put("Roleid",2);
-        values1.put("UpdateAt",temptlA.Datetimecurrent);
-        db.insert(ConnectSQLite.TABLE,null,values1);
-    }
+
 
 
 

@@ -75,96 +75,20 @@ import vn.zalopay.sdk.listeners.PayOrderListener;
 public class MainViewModel extends AppCompatActivity {
     ActivityCartBinding binding;
     String TAG="MainViewModel";
-    TextView lblZpTransToken, txtToken;
-    Button btnCreateOrder, btnPay;
-    EditText txtAmount;
-
-    private void BindView() {
-        txtToken = findViewById(R.id.txtToken);
-        lblZpTransToken = findViewById(R.id.lblZpTransToken);
-        btnCreateOrder = findViewById(R.id.btnCreateOrder);
-        txtAmount = findViewById(R.id.txtAmount);
-        btnPay = findViewById(R.id.btnPay);
-        IsLoading();
-    }
-
-    private void IsLoading() {
-        lblZpTransToken.setVisibility(View.INVISIBLE);
-        txtToken.setVisibility(View.INVISIBLE);
-        btnPay.setVisibility(View.INVISIBLE);
-    }
-
-    private void IsDone() {
-        lblZpTransToken.setVisibility(View.VISIBLE);
-        txtToken.setVisibility(View.VISIBLE);
-        btnPay.setVisibility(View.VISIBLE);
-    }
     @SuppressLint("Range")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityCartBinding.inflate(getLayoutInflater());
         EdgeToEdge.enable(this);
+        binding = ActivityCartBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Map<String,Object> newdata=new HashMap<>();
-        newdata.put("ID_product","1");
-        newdata.put("Quantity",2);
-        newdata.put("Product_name","Stylish Plaid Shirt");
-//        getCart(temptlA.IDuser);
-        FirebaseFirestore db=FirebaseFirestore.getInstance();
-        db.collection("cart_customer").document("IAAJ6XcT6mw8DkQQE5TO")
-                .collection("UQ0K5yKZJYQhkqaWlrlmtHJuswF3").get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        if (task.getResult().isEmpty()) {
-                            // Collection không tồn tại, tạo mới
-                            db.collection("cart_customer").document("IAAJ6XcT6mw8DkQQE5TO")
-                                    .collection("UQ0K5yKZJYQhkqaWlrlmtHJuswF3").document("1").set(newdata).addOnSuccessListener(
-                                            aVoid->{
-                                                Log.v(TAG,"1");
-                                            }
-                                    ).addOnFailureListener(e -> {
-                                        Log.w("TAG","adwadwad");
-                                    });
-                        } else {
-                        }
-                    } else {
-                        Log.w("Firestore", "Error getting documents.", task.getException());
-                    }
-                });
+
+
 
     }
-    private void creatUserWithEmail(String email,String password){
-        FirebaseAuth mAuth= FirebaseAuth.getInstance();
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Log.v(TAG,user.getUid()+"\n"+user.getEmail()+"\n"+user.getDisplayName());
-                            mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()){
-                                        Toast.makeText(getApplicationContext(), "Email đặt lại mật khẩu đã được gửi!", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), "Có lỗi xảy ra! Vui lòng kiểm tra lại email.", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(getApplicationContext(), "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
 
-    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -195,7 +119,7 @@ public class MainViewModel extends AppCompatActivity {
             content.put("PriceOriginal", price[i]);
             content.put("DiscountPrice", random.nextInt(100));
             content.put("Images",mang2[i]);
-            content.put("Descr", "Đ có cái gì mà để viết ở đây hết đjt mẹ chúng mày \n Sản phẩm này không phải là thuốc không có tác dụng thay thế thuốc chữa bệnh\n Không dành cho trẻ em dưới 18 tuổi");
+            content.put("Descr", " Sản phẩm này không phải là thuốc không có tác dụng thay thế thuốc chữa bệnh\n Không dành cho trẻ em dưới 18 tuổi");
             long result = database.insert(ConnectSQLite.TABLE_1, null, content);
             if (result == -1) {
                 Log.e("DB Insert Error", "Failed to insert data\nLuot thu i: " +i);
@@ -204,7 +128,7 @@ public class MainViewModel extends AppCompatActivity {
             }
         }
     }
-    private  void addaccount(SQLiteDatabase database){
+    private  void addaccount(@NonNull SQLiteDatabase database){
 
         ContentValues contentValues1 = new ContentValues();
         contentValues1.put("ID_Customer", "ysGSYKsEJlYQI6e2sCRd9bGbXJs2");
@@ -255,77 +179,6 @@ public class MainViewModel extends AppCompatActivity {
           int deletedRows=  database.delete(TABLE,whereClause,whereArgs);
             Log.v("ConnectSQlite", "Deleted Rows: " + deletedRows);
         }
-    }
-    private void getCart(String id) {
-        String idtemp = id;
-        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-
-        firebaseFirestore.collection("cartdeltai").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    if (!task.getResult().isEmpty()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String id_cust = document.getString("ID_CUs");
-                            String id_cart = document.getString("ID");
-                            if (id_cust != null && id_cart != null && id_cust.equals(idtemp)) {
-                                temptlA.IDCART = id_cart;
-                                Log.v(TAG, "Giỏ hàng ID: " + id_cart);
-                                break; // Thoát khỏi vòng lặp sau khi tìm thấy
-                            } else {
-                                Log.v(TAG, "Không tìm thấy");
-                            }
-                        }
-                    } else {
-                        Log.e(TAG, "Không có kết quả");
-                    }
-                } else {
-                    Log.e(TAG, "Lỗi khi lấy dữ liệu từ Firestore");
-                }
-
-                if (temptlA.IDCART != null) {
-                    CollectionReference coll = firebaseFirestore.collection("cart_customer").document(temptlA.IDCART).collection(id);
-                    ConnectSQLite c = new ConnectSQLite(getApplicationContext());
-                    SQLiteDatabase dbSQLite = c.getReadableDatabase();
-
-                    coll.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                if (!task.getResult().isEmpty()) {
-                                    for (QueryDocumentSnapshot snapshot : task.getResult()) {
-                                        Log.v(TAG, "Tài liệu: " + snapshot.getId());
-                                        Cursor cursor1 = dbSQLite.rawQuery("SELECT * FROM " + ConnectSQLite.TABLE_1 + " WHERE ID_product = ?", new String[]{snapshot.getId()});
-                                        if (cursor1.moveToFirst()) {
-                                            ArrayList<String> listimg = new ArrayList<>();
-                                            listimg.add(cursor1.getString(6));
-                                            ItemFood item = new ItemFood(cursor1.getInt(0),
-                                                    cursor1.getString(1),
-                                                    cursor1.getInt(2),
-                                                    cursor1.getInt(4),
-                                                    cursor1.getInt(3),
-                                                    cursor1.getInt(5),
-                                                    listimg,
-                                                    cursor1.getString(7));
-                                            temptlA.listcart.add(new cartItem(String.valueOf(item.getID()),
-                                                    item,
-                                                    Integer.parseInt(String.valueOf(snapshot.getLong("Quantity")))));
-                                            Log.v(TAG, cursor1.getString(1) + "\n" + cursor1.getString(7) + "\n" + cursor1.getInt(3));
-                                        }
-                                    }
-                                } else {
-                                    Log.e(TAG, "Giỏ hàng rỗng");
-                                }
-                            } else {
-                                Log.e(TAG, "Lỗi khi lấy dữ liệu giỏ hàng từ Firestore");
-                            }
-                        }
-                    });
-                } else {
-                    Log.e(TAG, "Không tìm thấy IDCART");
-                }
-            }
-        });
     }
 
     private void updateSqlite(SQLiteDatabase database){

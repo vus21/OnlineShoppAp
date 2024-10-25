@@ -1,0 +1,116 @@
+    private void importAccounts() {
+        Map<String, Object> accountData = new HashMap<>();
+        accountData.put("uid", "admin");
+        accountData.put("email", "taydamkhoida@gmail.com");
+        accountData.put("phoneNumber", "0705688386");
+        accountData.put("password", "123123A"); // Store hashed passwords in production
+        accountData.put("roleId", 1);
+        accountData.put("status", true);
+        accountData.put("createdAt", System.currentTimeMillis());
+        accountData.put("updatedAt", System.currentTimeMillis());
+
+        db.collection("accounts").document("admin").set(accountData)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Tài khoản đã được import thành công"))
+                .addOnFailureListener(e -> Log.w(TAG, "Lỗi khi import tài khoản: ", e));
+    }
+    private void importCustomers() {
+        List<Map<String, Object>> customersData = Arrays.asList(
+                createCustomer("admin", "Mike TySon Cổng Đồn", "Tân Mỹ, Văn Lãng, Lạng Sơn", "2004-04-19", "Nam"),
+                createCustomer("customerUID456", "Nguyễn Văn A", "123 Đường Lê Lợi, Quận 1, TP.HCM", "1990-01-01", "Nam"),
+                createCustomer("customerUID789", "Nguyễn Thị B", "456 Đường Trần Hưng Đạo, Quận 5, TP.HCM", "1995-02-15", "Nữ")
+        );
+
+        for (Map<String, Object> customer : customersData) {
+            db.collection("customers").document((String) customer.get("uid"))
+                    .set(customer)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Khách hàng đã được import thành công: " + customer.get("fullName")))
+                    .addOnFailureListener(e -> Log.w(TAG, "Lỗi khi import khách hàng: ", e));
+        }
+    }
+
+    private Map<String, Object> createCustomer(String uid, String fullName, String address, String birthday, String gender) {
+        Map<String, Object> customer = new HashMap<>();
+        customer.put("uid", uid);
+        customer.put("fullName", fullName);
+        customer.put("address", address);
+        customer.put("birthday", "23/12/2004"); // Use the correct date format
+        customer.put("gender", gender);
+        customer.put("createdAt", FieldValue.serverTimestamp());
+        customer.put("updatedAt", FieldValue.serverTimestamp());
+        return customer;
+    }
+
+    private void importDishes() {
+        List<Map<String, Object>> dishesData = Arrays.asList(
+                createDish("PHOBO001", "Phở bò", "Món ăn truyền thống Việt Nam", 50000, 1,
+                        "https://fohlafood.vn/cdn/shop/articles/bi-quyet-nau-phi-bo-ngon-tuyet-dinh.jpg?v=1712213789"),
+                createDish("CHEDODEN001", "Chè đỗ đen", "Món tráng miệng truyền thống Việt Nam", 25000,
+                        2,
+                        "https://i.ytimg.com/vi/z-XMpQGH6UE/maxresdefault.jpg")
+        );
+
+        for (Map<String, Object> dish : dishesData) {
+            db.collection("dishes").document((String) dish.get("dishId"))
+                    .set(dish)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Món ăn đã được import thành công: " + dish.get("dishName")))
+                    .addOnFailureListener(e -> Log.w(TAG, "Lỗi khi import món ăn: ", e));
+        }
+    }
+
+    private void importOrderStatus() {
+        List<Map<String, Object>> orderStatusData = Arrays.asList(
+                createOrderStatus("PENDING", "Đang chờ xử lý"),
+                createOrderStatus("PROCESSING", "Đang xử lý"),
+                createOrderStatus("DELIVERED", "Đã giao hàng")
+        );
+
+        for (Map<String, Object> status : orderStatusData) {
+            db.collection("orderStatus").document((String) status.get("statusId"))
+                    .set(status)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Trạng thái đơn hàng đã được import thành công: " + status.get("statusName")))
+                    .addOnFailureListener(e -> Log.w(TAG, "Lỗi khi import trạng thái đơn hàng: ", e));
+        }
+    }
+
+    private void importPaymentMethods() {
+        List<Map<String, Object>> paymentMethodsData = Arrays.asList(
+                createPaymentMethod("COD", "Thanh toán khi nhận hàng"),
+                createPaymentMethod("CREDIT", "Thẻ tín dụng")
+        );
+
+        for (Map<String, Object> method : paymentMethodsData) {
+            db.collection("paymentMethods").document((String) method.get("paymentMethodId"))
+                    .set(method)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Phương thức thanh toán đã được import thành công: " + method.get("paymentMethodName")))
+                    .addOnFailureListener(e -> Log.w(TAG, "Lỗi khi import phương thức thanh toán: ", e));
+        }
+    }
+
+    private Map<String, Object> createDish(String dishId, String dishName, String description,
+                                           int price, int dishCategoryId, String imageUrl) {
+        Map<String, Object> dish = new HashMap<>();
+        dish.put("dishId", dishId);
+        dish.put("dishName", dishName);
+        dish.put("description", description);
+        dish.put("price", price);
+        dish.put("dishCategoryId", dishCategoryId);
+        dish.put("imageUrl", imageUrl);
+        dish.put("status", 1);
+        dish.put("createdAt", FieldValue.serverTimestamp());
+        dish.put("updatedAt", FieldValue.serverTimestamp());
+        return dish;
+    }
+
+    private Map<String, Object> createOrderStatus(String statusId, String statusName) {
+        Map<String, Object> status = new HashMap<>();
+        status.put("statusId", statusId);
+        status.put("statusName", statusName);
+        return status;
+    }
+
+    private Map<String, Object> createPaymentMethod(String paymentMethodId, String paymentMethodName) {
+        Map<String, Object> method = new HashMap<>();
+        method.put("paymentMethodId", paymentMethodId);
+        method.put("paymentMethodName", paymentMethodName);
+        return method;
+    }
